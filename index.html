@@ -1,0 +1,269 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>SpendWise — Personal Expense Tracker</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <!-- ============ APP LAYOUT ============ -->
+  <div class="app">
+
+    <!-- ============ SIDEBAR ============ -->
+    <aside class="sidebar">
+      <div class="sidebar-logo">
+        <span class="logo-mark">₹</span>
+        <span class="logo-text">SpendWise</span>
+      </div>
+
+      <!-- Quick live summary inside sidebar -->
+      <div class="sidebar-mini">
+        <p class="mini-label">Total Balance</p>
+        <p id="sidebarBalance" class="mini-value">₹0.00</p>
+      </div>
+
+      <!-- Navigation links (smooth scroll anchors) -->
+      <nav class="sidebar-nav">
+        <a href="#top" class="nav-link active">📊 Dashboard</a>
+        <a href="#form-section" class="nav-link">➕ Add Transaction</a>
+        <a href="#transactions-section" class="nav-link">🧾 Transactions</a>
+        <a href="#budget-section" class="nav-link">🎯 Budget</a>
+        <a href="#breakdown-section" class="nav-link">📈 Breakdown</a>
+      </nav>
+
+      <div class="sidebar-footer">
+        <button id="themeToggle" class="theme-toggle" type="button">
+          <span class="theme-icon">🌙</span>
+          <span class="theme-text">Dark Mode</span>
+        </button>
+      </div>
+    </aside>
+
+    <!-- ============ MAIN CONTENT ============ -->
+    <main class="main" id="top">
+
+      <!-- Welcome header -->
+      <header class="welcome">
+        <div>
+          <h1>Welcome back 👋</h1>
+          <p class="subtitle">Track your money smartly with <strong>SpendWise</strong> · <span id="currentMonth"></span></p>
+        </div>
+        <button id="clearAllBtn" class="btn btn-ghost danger" type="button">Clear All Data</button>
+      </header>
+
+      <!-- ============ SUMMARY CARDS ============ -->
+      <section class="summary-cards">
+        <div class="card income-card">
+          <div class="card-icon">💰</div>
+          <div class="card-body">
+            <p class="card-label">Total Income</p>
+            <p id="totalIncome" class="card-value">₹0.00</p>
+          </div>
+        </div>
+
+        <div class="card expense-card">
+          <div class="card-icon">💸</div>
+          <div class="card-body">
+            <p class="card-label">Total Expenses</p>
+            <p id="totalExpense" class="card-value">₹0.00</p>
+          </div>
+        </div>
+
+        <div class="card balance-card">
+          <div class="card-icon">🏦</div>
+          <div class="card-body">
+            <p class="card-label">Remaining Balance</p>
+            <p id="totalBalance" class="card-value">₹0.00</p>
+          </div>
+        </div>
+      </section>
+
+      <!-- ============ ADD / EDIT TRANSACTION FORM ============ -->
+      <section id="form-section" class="panel">
+        <div class="panel-head">
+          <h2>Add Transaction</h2>
+          <p class="panel-sub">Fill in the details below to record income or an expense.</p>
+        </div>
+
+        <form id="transactionForm" novalidate>
+          <!-- Type selection -->
+          <div class="form-row type-row">
+            <label class="type-option">
+              <input type="radio" name="type" value="income" id="typeIncome" checked />
+              <span class="type-pill income">Income</span>
+            </label>
+            <label class="type-option">
+              <input type="radio" name="type" value="expense" id="typeExpense" />
+              <span class="type-pill expense">Expense</span>
+            </label>
+          </div>
+
+          <div class="form-grid">
+            <!-- Category (only for expenses) -->
+            <div class="field" id="categoryGroup">
+              <label for="categorySelect">Category</label>
+              <select id="categorySelect">
+                <option value="Food">Food</option>
+                <option value="Travel">Travel</option>
+                <option value="Shopping">Shopping</option>
+                <option value="Education">Education</option>
+                <option value="Entertainment">Entertainment</option>
+                <option value="Bills">Bills</option>
+                <option value="Other">Other</option>
+              </select>
+            </div>
+
+            <!-- Amount -->
+            <div class="field">
+              <label for="amount">Amount (₹)</label>
+              <input type="number" id="amount" placeholder="0.00" step="0.01" min="0" />
+            </div>
+
+            <!-- Date -->
+            <div class="field">
+              <label for="date">Date</label>
+              <input type="date" id="date" />
+            </div>
+
+            <!-- Description -->
+            <div class="field full">
+              <label for="description">Description</label>
+              <input type="text" id="description" placeholder="e.g. Lunch at college canteen" maxlength="60" />
+            </div>
+          </div>
+
+          <p id="formMessage" class="form-message"></p>
+
+          <div class="form-actions">
+            <button type="submit" id="submitBtn" class="btn btn-primary">Add Transaction</button>
+            <button type="button" id="cancelEditBtn" class="btn btn-ghost hidden">Cancel Edit</button>
+          </div>
+        </form>
+      </section>
+
+      <!-- ============ TRANSACTIONS ============ -->
+      <section id="transactions-section" class="panel">
+        <div class="panel-head">
+          <h2>Transaction History</h2>
+          <p class="panel-sub">Search and filter your transactions below.</p>
+        </div>
+
+        <!-- Search + Filters toolbar -->
+        <div class="toolbar">
+          <div class="search-box">
+            <span class="search-icon">🔎</span>
+            <input type="text" id="searchInput" placeholder="Search by description..." />
+          </div>
+          <select id="filterType" class="filter-select">
+            <option value="all">All Types</option>
+            <option value="income">Income Only</option>
+            <option value="expense">Expense Only</option>
+          </select>
+          <select id="filterCategory" class="filter-select">
+            <option value="all">All Categories</option>
+            <option value="Food">Food</option>
+            <option value="Travel">Travel</option>
+            <option value="Shopping">Shopping</option>
+            <option value="Education">Education</option>
+            <option value="Entertainment">Entertainment</option>
+            <option value="Bills">Bills</option>
+            <option value="Other">Other</option>
+          </select>
+          <select id="filterMonth" class="filter-select">
+            <option value="all">All Months</option>
+          </select>
+        </div>
+
+        <!-- Monthly summary (reflects the selected month in the filter above) -->
+        <div id="monthlySummary" class="monthly-summary">
+          <div class="ms-item">
+            <span class="ms-label">Period</span>
+            <span class="ms-value" id="msMonth">All time</span>
+          </div>
+          <div class="ms-item">
+            <span class="ms-label">Income</span>
+            <span class="ms-value income" id="msIncome">₹0.00</span>
+          </div>
+          <div class="ms-item">
+            <span class="ms-label">Expense</span>
+            <span class="ms-value expense" id="msExpense">₹0.00</span>
+          </div>
+          <div class="ms-item">
+            <span class="ms-label">Balance</span>
+            <span class="ms-value" id="msBalance">₹0.00</span>
+          </div>
+        </div>
+
+        <!-- Transactions table -->
+        <div class="table-wrap">
+          <table class="tx-table">
+            <thead>
+              <tr>
+                <th>Date</th>
+                <th>Description</th>
+                <th>Category</th>
+                <th>Type</th>
+                <th class="amt-col">Amount</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody id="transactionsTableBody">
+              <!-- Rows are generated by script.js -->
+            </tbody>
+          </table>
+          <p id="emptyState" class="empty-state">No transactions yet. Add one above to get started!</p>
+        </div>
+      </section>
+
+      <!-- ============ BUDGET + BREAKDOWN (side by side) ============ -->
+      <div class="two-col">
+
+        <!-- Monthly Budget -->
+        <section id="budget-section" class="panel">
+          <div class="panel-head">
+            <h2>Monthly Budget</h2>
+            <p class="panel-sub">Set a spending limit for this month.</p>
+          </div>
+
+          <div class="budget-input-row">
+            <input type="number" id="budgetInput" placeholder="Enter budget amount" step="0.01" min="0" />
+            <button type="button" id="setBudgetBtn" class="btn btn-primary">Set Budget</button>
+          </div>
+
+          <div class="budget-display">
+            <div class="budget-stats">
+              <span>Spent: <strong id="budgetSpent">₹0.00</strong></span>
+              <span>Budget: <strong id="budgetAmount">₹0.00</strong></span>
+            </div>
+            <!-- CSS progress bar -->
+            <div class="progress-track">
+              <div id="budgetBar" class="progress-fill"></div>
+            </div>
+            <p id="budgetPercent" class="budget-percent">0% used</p>
+            <p id="budgetWarning" class="budget-warning hidden">⚠️ You have exceeded your budget!</p>
+          </div>
+        </section>
+
+        <!-- Category Breakdown -->
+        <section id="breakdown-section" class="panel">
+          <div class="panel-head">
+            <h2>Expense Breakdown</h2>
+            <p class="panel-sub">Where your money goes.</p>
+          </div>
+          <div id="categoryBreakdown" class="breakdown-list">
+            <!-- Bars are generated by script.js -->
+          </div>
+          <p id="breakdownEmpty" class="empty-state small">No expenses recorded yet.</p>
+        </section>
+      </div>
+
+      <footer class="footer">
+        <p>SpendWise · Built with HTML, CSS &amp; Vanilla JavaScript · Data saved locally in your browser.</p>
+      </footer>
+    </main>
+  </div>
+
+  <script src="script.js"></script>
+</body>
+</html>
